@@ -39,3 +39,5 @@
 *.html
 
 Sorting/Insertion_sort/Java/out/
+
+*.class
