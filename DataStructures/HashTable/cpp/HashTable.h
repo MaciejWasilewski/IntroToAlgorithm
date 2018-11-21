@@ -33,6 +33,11 @@ public:
         std::cout<<this->hashfun(item)<<std::endl;
         hashTable[this->hashfun(item)].add(item);
     }
+    void remove(T item)
+    {
+//        std::cout<<"Removing item from list nr "<<this->hashfun(item)<<"\n";
+        hashTable[this->hashfun(item)].del(item);
+    }
     void search(T item)
     {
         linkedListElem<T> * temp=this->hashTable[this->hashfun(item)].search(item);
@@ -43,6 +48,15 @@ public:
         else
         {
             std::cout<<"Found item!\n";
+        }
+    }
+    void print()
+    {
+        for(int i=0;i<41;i++)
+        {
+            std::cout<<"Hash value: "<<i<<"\n\t";
+            this->hashTable[i].printList();
+            std::cout<<"\n";
         }
     }
 

@@ -16,8 +16,16 @@ int main() {
 //    list.printList();
     HashTable<double> list(hashFunction);
     list.add(45.0);
-    std::cout<<"Added item\n";
+    std::cout << "Added item\n";
+
     list.search(45.0);
-    std::cout<<"dupa"<<std::endl;
+    list.add(45.1);
+    list.add(39.1);
+    list.print();
+    list.remove(39.0);
+    list.remove(39.1);
+    list.print();
+    //list.print();
+//    std::cout<<"dupa"<<std::endl;
     return 0;
 }

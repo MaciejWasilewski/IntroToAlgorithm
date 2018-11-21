@@ -83,14 +83,20 @@ linkedListElem<T> *LinkedList<T>::search(T item) {
 template<class T>
 void LinkedList<T>::del(T item) {
     linkedListElem<T> *temp = this->search(item);
-    //std::cout << temp << std::endl;
+//    std::cout << temp << std::endl;
     if (temp != NULL) {
-        //std::cout<<"not null"<<std::endl;
+//        std::cout << "not null" << std::endl;
         if (this->head == temp) {
-            this->head = temp->next;
-            temp->next->previous = NULL;
+//            std::cout << "This is head of a list\n";
+            if (temp->next != NULL) {
+//                std::cout << temp->next;
+                this->head = temp->next;
+                temp->next->previous = NULL;
+            } else {
+                this->head = NULL;
+            }
         } else {
-            //std::cout<<"not head"<<std::endl;
+//            std::cout << "not head" << std::endl;
             if (temp->next != NULL) {
                 //std::cout<<"has next"<<std::endl;
                 temp->next->previous = temp->previous;
@@ -102,6 +108,7 @@ void LinkedList<T>::del(T item) {
         }
         //std::cout << "Deleting item: " << temp->value << "\n";
         delete temp;
+        this->printList();
     }
 }
 
@@ -109,12 +116,12 @@ template<class T>
 void LinkedList<T>::printList() {
     if (head != NULL) {
         linkedListElem<T> *temp = this->head;
-        std::cout << temp->value << "\t";
+        std::cout << "[" << temp->value;
         while (temp->next != NULL) {
-            std::cout << temp->next->value << "\t";
+            std::cout << ",\t" << temp->next->value;
             temp = temp->next;
         }
-        std::cout << "\n";
+        std::cout << "]\n";
 
     } else {
         std::cout << "The list is empty!";
