@@ -29,8 +29,8 @@ struct solution {
 void retrieve_lcs(std::string *str, std::string *s1, std::vector<std::vector<directions >> *dirs, size_t i, size_t j);
 
 solution LCS_dynamic(std::string s1, std::string s2) {
-    size_t m = (size_t) s1.length();
-    size_t n = (size_t) s2.length();
+    auto m = (size_t) s1.length();
+    auto n = (size_t) s2.length();
     std::vector<std::vector<int>> lcs;
     std::vector<std::vector<directions >> dirs;
     lcs.resize(m + 1);
