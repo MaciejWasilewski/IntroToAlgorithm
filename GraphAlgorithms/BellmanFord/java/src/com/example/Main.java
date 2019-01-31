@@ -1,6 +1,5 @@
 package com.example;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
@@ -63,15 +62,15 @@ public class Main {
 
         adjWeightList.put(3,new HashMap<>());
 
-//        adjWeightList.get(3).put(1,(double)1);
-//        adjWeightList.get(3).put(2,(double)4);
+        adjWeightList.get(3).put(1,(double)1);
+        adjWeightList.get(3).put(2,(double)4);
         adjWeightList.get(3).put(4,(double)6);
 
 
         adjWeightList.put(4,new HashMap<>());
 
-//        adjWeightList.get(4).put(0,(double)3);
-//        adjWeightList.get(4).put(2,(double)7);
+        adjWeightList.get(4).put(0,(double)3);
+        adjWeightList.get(4).put(2,(double)7);
 
         GraphAlgorithms alg=new GraphAlgorithms(adjWeightList,graphNodeMap);
         alg.bellmanFord(0);
@@ -82,9 +81,16 @@ public class Main {
         {
             System.out.println(g);
         }
-        alg.DAGShortestPaths(0);
-        for(Integer key:graphNodeMap.keySet()) {
-            System.out.println(alg.returnRoad(graphNodeMap.get(key)));
-        }
+//        alg.DAGShortestPaths(0);
+//        for(Integer key:graphNodeMap.keySet()) {
+//            System.out.println(alg.returnRoad(graphNodeMap.get(key))+": "+graphNodeMap.get(key).distance);
+//        }
+        alg.dijkstra(0);
+//        for(Integer key:graphNodeMap.keySet()) {
+//            System.out.println(alg.returnRoad(graphNodeMap.get(key))+": "+graphNodeMap.get(key).distance);
+//        }
+
+        alg.printMatrix(alg.slowAllPairsShortesPath());
+
     }
 }

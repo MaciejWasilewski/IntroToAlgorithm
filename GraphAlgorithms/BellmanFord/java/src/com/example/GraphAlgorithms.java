@@ -27,14 +27,14 @@ class graphNode {
     graphNode parent = null;
     Double distance = Double.POSITIVE_INFINITY;
     Character symbol;
-    Integer index=Integer.MAX_VALUE;
+    Integer index = Integer.MAX_VALUE;
     color col = color.white;
     Integer discoverTime = Integer.MAX_VALUE;
     Integer finishTime = Integer.MAX_VALUE;
 
     graphNode(Character symbol, Integer i) {
         this.symbol = symbol;
-        this.index=i;
+        this.index = i;
     }
 }
 
@@ -42,6 +42,16 @@ public class GraphAlgorithms {
     private ArrayList<edge> allEdges;
     private HashMap<Integer, graphNode> graphNodeMap;
     private HashMap<Integer, HashMap<Integer, Double>> adjWeightList;
+    private HashMap<Integer, HashMap<Integer, Double>> adjWeightMatrix;
+
+    private void listToMatrix() {
+        for (Integer i : adjWeightList.keySet()) {
+            HashMap<Integer, Double> k = adjWeightList.get(i);
+            for (Integer j : k.keySet()) {
+                adjWeightMatrix.get(i).put(j, k.get(j));
+            }
+        }
+    }
 
     public GraphAlgorithms(HashMap<Integer, HashMap<Integer, Double>> adjWeightList, HashMap<Integer, graphNode> graphNodeMap) {
         this.adjWeightList = adjWeightList;
@@ -53,6 +63,60 @@ public class GraphAlgorithms {
         }
 
         this.graphNodeMap = graphNodeMap;
+        this.adjWeightMatrix = new HashMap<>(graphNodeMap.size());
+        for (int i = 0; i < graphNodeMap.size(); i++) {
+            this.adjWeightMatrix.put(i, new HashMap<>(graphNodeMap.size()));
+            for (int j = 0; j < graphNodeMap.size(); j++) {
+                if (i == j) {
+                    this.adjWeightMatrix.get(i).put(j, 0.0);
+                } else {
+                    this.adjWeightMatrix.get(i).put(j, Double.POSITIVE_INFINITY);
+                }
+            }
+        }
+        listToMatrix();
+
+    }
+
+    private HashMap<Integer, HashMap<Integer, Double>> extendedShortestPath(HashMap<Integer, HashMap<Integer, Double>> L) {
+        Integer n = L.size();
+        HashMap<Integer, HashMap<Integer, Double>> L2 = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            L2.put(i, new HashMap<>());
+            for (int j = 0; j < n; j++) {
+                L2.get(i).put(j, Double.POSITIVE_INFINITY);
+                for (int k = 0; k < n; k++) {
+                    L2.get(i).put(j, Double.min(L2.get(i).get(j), L.get(i).get(k) + adjWeightMatrix.get(k).get(j)));
+                }
+            }
+        }
+        return L2;
+    }
+
+    HashMap<Integer, HashMap<Integer, Double>> slowAllPairsShortesPath() {
+        Integer n = adjWeightMatrix.size();
+        HashMap<Integer, HashMap<Integer, Double>> L = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            L.put(i, new HashMap<>(adjWeightMatrix.get(i)));
+        }
+        for (int m = 2; m < n; m++) {
+            printMatrix(L);
+            L = extendedShortestPath(L);
+
+        }
+        return L;
+    }
+
+    void printMatrix(HashMap<Integer, HashMap<Integer, Double>> matrix) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.get(i).size(); j++) {
+                sb.append(matrix.get(i).get(j).toString());
+                sb.append("\t");
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb.toString());
     }
 
     private void DFSVisit(graphNode u, AtomicInteger time, Integer key) {
@@ -92,26 +156,51 @@ public class GraphAlgorithms {
 
         }
     }
-    ArrayList<Integer> topologicalSort()
-    {
+
+    ArrayList<Integer> topologicalSort() {
         DFS();
-        ArrayList<graphNode> topSort=new ArrayList<>(graphNodeMap.values());
+        ArrayList<graphNode> topSort = new ArrayList<>(graphNodeMap.values());
         topSort.sort(Comparator.comparing(a -> -a.finishTime));
         return topSort.stream().map(a -> a.index).collect(Collectors.toCollection(ArrayList::new));
     }
-    public void DAGShortestPaths(Integer s)
-    {
 
-        ArrayList<Integer> topSorted= topologicalSort();
+    public void DAGShortestPaths(Integer s) {
+
+        ArrayList<Integer> topSorted = topologicalSort();
         initializeSingleSource(s);
-        for(Integer u: topSorted)
-        {
-            for(Integer v: adjWeightList.get(u).keySet())
-            {
+        for (Integer u : topSorted) {
+            for (Integer v : adjWeightList.get(u).keySet()) {
                 relax(u, v, adjWeightList.get(u).get(v));
             }
         }
     }
+
+    public void dijkstra(Integer s) {
+        initializeSingleSource(s);
+        TreeSet<graphNode> Q = new TreeSet<>(Comparator.comparing(a -> a.distance));
+        Q.addAll(graphNodeMap.values());
+        while (!Q.isEmpty()) {
+            System.out.println(Q.size());
+            graphNode u = Q.pollFirst();
+            if (u == null) {
+                throw new IllegalStateException("How the TreeSet Q may be non empty, if the first element is null?!");
+            }
+            for (Integer key : adjWeightList.get(u.index).keySet()) {
+                Double w = adjWeightList.get(u.index).get(key);
+                relax(u.index, key, w);
+                graphNode v = graphNodeMap.get(key);
+                if (Q.remove(v))
+                {
+                    Q.add(v);
+                }
+                else
+                {
+                    System.out.println(v.symbol+" is the vertice that I mistakely want to add again.");
+                }
+            }
+        }
+    }
+
     private void initializeSingleSource(int s) throws IllegalArgumentException {
         graphNode temp;
         for (Integer key : this.graphNodeMap.keySet()) {
@@ -139,7 +228,7 @@ public class GraphAlgorithms {
         initializeSingleSource(s);
         for (int i = 0; i < graphNodeMap.size() - 1; i++) {
             for (edge e : allEdges) {
-                relax(e.u.index, e.v.index,e.weight);
+                relax(e.u.index, e.v.index, e.weight);
             }
         }
         for (edge e : allEdges) {
