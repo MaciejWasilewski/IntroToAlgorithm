@@ -78,7 +78,7 @@ public class GraphAlgorithms {
 
     }
 
-    private HashMap<Integer, HashMap<Integer, Double>> extendedShortestPath(HashMap<Integer, HashMap<Integer, Double>> L) {
+    private HashMap<Integer, HashMap<Integer, Double>> extendedShortestPath(HashMap<Integer, HashMap<Integer, Double>> L, HashMap<Integer, HashMap<Integer, Double>> W) {
         Integer n = L.size();
         HashMap<Integer, HashMap<Integer, Double>> L2 = new HashMap<>();
         for (int i = 0; i < n; i++) {
@@ -86,7 +86,7 @@ public class GraphAlgorithms {
             for (int j = 0; j < n; j++) {
                 L2.get(i).put(j, Double.POSITIVE_INFINITY);
                 for (int k = 0; k < n; k++) {
-                    L2.get(i).put(j, Double.min(L2.get(i).get(j), L.get(i).get(k) + adjWeightMatrix.get(k).get(j)));
+                    L2.get(i).put(j, Double.min(L2.get(i).get(j), L.get(i).get(k) + W.get(k).get(j)));
                 }
             }
         }
@@ -100,8 +100,24 @@ public class GraphAlgorithms {
             L.put(i, new HashMap<>(adjWeightMatrix.get(i)));
         }
         for (int m = 2; m < n; m++) {
-            printMatrix(L);
-            L = extendedShortestPath(L);
+            //printMatrix(L);
+            L = extendedShortestPath(L,adjWeightMatrix);
+
+        }
+        return L;
+    }
+
+    HashMap<Integer, HashMap<Integer, Double>> fasterAllPairsShortesPath() {
+        Integer n = adjWeightMatrix.size();
+        HashMap<Integer, HashMap<Integer, Double>> L = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            L.put(i, new HashMap<>(adjWeightMatrix.get(i)));
+        }
+        int m=1;
+        while (m < n) {
+            //printMatrix(L);
+            L = extendedShortestPath(L, L);
+            m*=2;
 
         }
         return L;
@@ -175,12 +191,12 @@ public class GraphAlgorithms {
         }
     }
 
-    public void dijkstra(Integer s) {
+    void dijkstra(Integer s) {
         initializeSingleSource(s);
         TreeSet<graphNode> Q = new TreeSet<>(Comparator.comparing(a -> a.distance));
         Q.addAll(graphNodeMap.values());
         while (!Q.isEmpty()) {
-            System.out.println(Q.size());
+            //System.out.println(Q.size());
             graphNode u = Q.pollFirst();
             if (u == null) {
                 throw new IllegalStateException("How the TreeSet Q may be non empty, if the first element is null?!");

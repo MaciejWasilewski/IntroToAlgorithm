@@ -91,6 +91,7 @@ public class Main {
 //        }
 
         alg.printMatrix(alg.slowAllPairsShortesPath());
+        alg.printMatrix(alg.fasterAllPairsShortesPath());
 
     }
 }
